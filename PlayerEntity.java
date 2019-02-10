@@ -32,9 +32,10 @@ public class PlayerEntity extends Entity {
 			for(int i = 0; i < ents.size(); i++) {
 				if(ents.get(i) instanceof TileEntity) {
 					if(ents.get(i).tileX == this.tileX && ents.get(i).tileY == this.tileY && ents.get(i).tileColor == tileColor) {
-						return false;
-					} else if(ents.get(i).tileX == this.tileX && ents.get(i).tileY == this.tileY && ents.get(i).tileColor != tileColor){
+						System.out.println("hi");
 						return true;
+					} else if(ents.get(i).tileX == this.tileX && ents.get(i).tileY == this.tileY && ents.get(i).tileColor != tileColor){
+						return false;
 					}
 					
 				}
