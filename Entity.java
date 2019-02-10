@@ -1,7 +1,6 @@
 package ctrl;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.Graphics;
 
 public class Entity {
 	private float x;
@@ -41,5 +40,8 @@ public class Entity {
 			return false;
 		}
 		return true;
+	}
+	public void draw(Graphics g) {
+		sprite.draw(g,(int) x, (int) y);
 	}
 }
