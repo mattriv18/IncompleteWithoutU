@@ -18,10 +18,14 @@ public class Game extends Canvas {
 	private BufferStrategy strategy;
 	//is set to true if the game is currently running (looping)
 	private boolean gameRunning = true;
-	
+	private ArrayList<Entity> entities = new ArrayList<>();
 	private Map map;
 	private Entity player;
 	
+	private void initEntities() {
+		player = new Entity("player2.png", map, 0,0);
+		entities.add(player);
+	}
 	
 	public Game() {
 		//Create the frame for our game
@@ -51,6 +55,7 @@ public class Game extends Canvas {
 		strategy = getBufferStrategy();
 		map = new Map();
 		//player = new Entity(sprite, map, 0, 0);
+		initEntities();
 	}
 	
 	public void gameLoop() {
@@ -67,6 +72,20 @@ public class Game extends Canvas {
 			Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
 			g.setColor(Color.black);
 			g.fillRect(0,0,750,750);
+			
+			// cycle round asking each entity to move itself
+			for (int i=0;i<entities.size();i++) {
+				Entity entity = (Entity) entities.get(i);
+
+				entity.move();
+			}
+
+			// cycle round drawing all the entities we have in the game
+			for (int i=0;i<entities.size();i++) {
+				Entity entity = (Entity) entities.get(i);
+
+				entity.draw(g);
+			}
 			
 			//since we have finished drawing we clear up the current graphics and then flip the buffer
 			//i.e. we change the current "frame" to be the next one

@@ -1,11 +1,14 @@
 package ctrl;
 
+import static org.junit.Assert.fail;
+
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -28,12 +31,20 @@ public class SpriteStore {
 		}
 		
 		BufferedImage sourceImage = null;
-		try {
-			sourceImage = ImageIO.read(new File(ref));
-		} catch(Exception e) {
-			System.out.println(e);
-		}
 		
+		try {
+			URL url = this.getClass().getClassLoader().getResource(ref);
+			
+			if (url == null) {
+				fail("Can't find ref: "+ref);
+			}
+			
+			// use ImageIO to read the image in
+
+			sourceImage = ImageIO.read(url);
+		} catch (IOException e) {
+			fail("Failed to load: "+ref);
+		}
 		// create an accelerated image of the right size to store our sprite in
 		GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().
 		                             getDefaultScreenDevice().getDefaultConfiguration();
