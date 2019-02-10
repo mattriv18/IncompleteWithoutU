@@ -19,6 +19,10 @@ public class Game extends Canvas {
 	//is set to true if the game is currently running (looping)
 	private boolean gameRunning = true;
 	
+	private Map map;
+	private Entity player;
+	
+	
 	public Game() {
 		//Create the frame for our game
 		JFrame container = new JFrame("ctrl game");
@@ -45,6 +49,8 @@ public class Game extends Canvas {
 		//run better
 		createBufferStrategy(2);
 		strategy = getBufferStrategy();
+		map = new Map();
+		//player = new Entity(sprite, map, 0, 0);
 	}
 	
 	public void gameLoop() {
