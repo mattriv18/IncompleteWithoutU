@@ -1,6 +1,8 @@
 package ctrl;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 
 public class Entity {
 	protected float tileX;

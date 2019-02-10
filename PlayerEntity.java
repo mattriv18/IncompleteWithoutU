@@ -49,7 +49,6 @@ public class PlayerEntity extends Entity {
 			if(ents.get(i) instanceof TileEntity) {
 				if(ents.get(i).tileX == this.tileX && ents.get(i).tileY == this.tileY && ents.get(i).tileColor != tileColor) {
 					if(ents.get(i).getGoal()){
-						System.out.println("one color is WON");
 						return true;
 					}
 					return false;

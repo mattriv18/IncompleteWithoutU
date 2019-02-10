@@ -6,12 +6,14 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
+import java.awt.TextField;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -34,6 +36,8 @@ public class Game extends Canvas {
 	private boolean upPressed0;
 	private boolean downPressed0;
 	private int moveSpeed = 50;
+	private int lvl = 1;
+	private boolean menuContinue;
 	
 	public Entity getOtherPlayer(Entity player) {
 		if(player.tileColor == true) {
@@ -44,13 +48,13 @@ public class Game extends Canvas {
 	
 	private void initEntities() {
 		ArrayList<String> lines = new ArrayList<>();
-		try(Scanner sc = new Scanner(new File("resources/lvl1.txt"))){
+		try(Scanner sc = new Scanner(new File("resources/lvl" + lvl + ".txt"))){
 			while(sc.hasNextLine()) {
 				lines.add(sc.nextLine());
 			}
 		}
 		catch(FileNotFoundException e){
-			System.out.println("File '" + "lvl1.txt" + "' not found, initializing both 'list' and 'array' to be empty\n");
+			System.out.println("File '" + "lvl" + lvl + ".txt" + "' not found, initializing both 'list' and 'array' to be empty\n");
 		}
 		catch(Exception e){
 			System.out.println("Error occurred while extracting data:\n");
@@ -120,7 +124,29 @@ public class Game extends Canvas {
 		createBufferStrategy(2);
 		strategy = getBufferStrategy();
 		//player = new Entity(sprite, map, 0, 0);
-		initEntities();
+	}
+	
+	public void menuLoop() {
+		while(gameRunning) {
+			Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
+			g.setColor(Color.white);
+			g.fillRect(0,0,750,750);
+			TileEntity menuText = new TileEntity(this, "menutext.png", 0, 0, false, false);
+			menuText.draw(g);
+			if(menuContinue) {
+				menuContinue = !menuContinue;
+				initEntities();
+				gameLoop();
+			}
+			
+			//since we have finished drawing we clear up the current graphics and then flip the buffer
+			//i.e. we change the current "frame" to be the next one
+			g.dispose();
+			strategy.show();
+			
+			//then pause for a bit: this will allow us to have the game run at 100 fps
+			try { Thread.sleep(10); } catch (Exception e) {}
+		}
 	}
 	
 	public void gameLoop() {
@@ -209,8 +235,36 @@ public class Game extends Canvas {
 			}
 			
 			if(((PlayerEntity) blackPlayer).didIFinish() && ((PlayerEntity) whitePlayer).didIFinish()) {
-				System.out.println("YOU WON");
+				entities = new ArrayList<>();
+				lvl++;
+				if(lvl == 5) {
+					endLoop();
+				}
+				initEntities();
 			}
+			//since we have finished drawing we clear up the current graphics and then flip the buffer
+			//i.e. we change the current "frame" to be the next one
+			g.dispose();
+			strategy.show();
+			
+			//then pause for a bit: this will allow us to have the game run at 100 fps
+			try { Thread.sleep(10); } catch (Exception e) {}
+		}
+	}
+	
+	public void endLoop() {
+		while(gameRunning) {
+			Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
+			g.setColor(Color.white);
+			g.fillRect(0,0,750,750);
+			TileEntity victoryRoyaleText = new TileEntity(this, "victoryroyale.png", 0, 0, false, false);
+			victoryRoyaleText.draw(g);
+			if(menuContinue) {
+				lvl = 1;
+				menuContinue = !menuContinue;
+				menuLoop();
+			}
+			
 			//since we have finished drawing we clear up the current graphics and then flip the buffer
 			//i.e. we change the current "frame" to be the next one
 			g.dispose();
@@ -247,6 +301,9 @@ public class Game extends Canvas {
 			if (e.getKeyCode() == KeyEvent.VK_S) {
 				downPressed0 = true;
 			}
+			if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+				menuContinue = true;
+			}
 		}
 
 		public void keyTyped(KeyEvent e) {
@@ -259,6 +316,6 @@ public class Game extends Canvas {
 	
 	public static void main(String argv[]) {
 		Game g = new Game();
-		g.gameLoop();
+		g.menuLoop();
 	}
 }
