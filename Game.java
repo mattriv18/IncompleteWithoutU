@@ -26,6 +26,8 @@ public class Game extends Canvas {
 	private Map map;
 	private Entity whitePlayer;
 	private Entity blackPlayer;
+	private Entity blackGoal;
+	private Entity whiteGoal;
 	private boolean leftPressed1;
 	private boolean rightPressed1;
 	private boolean upPressed1;
@@ -63,17 +65,23 @@ public class Game extends Canvas {
 			char[] chars = s.toCharArray();
 			for(char c : chars) {
 				if(c == '0') {
-					entities.add(new TileEntity(this, "whitetile.png", currentX, currentY, false));
+					entities.add(new TileEntity(this, "whitetile.png", currentX, currentY, false, false));
 				} else if(c == '1') {
-					entities.add(new TileEntity(this, "blacktile.png", currentX, currentY, true));
+					entities.add(new TileEntity(this, "blacktile.png", currentX, currentY, true, false));
 				} else if(c == 'b') {
 					whitePlayer = new PlayerEntity(this, "blacktileplayer.png", currentX, currentY, false);
 					entities.add(whitePlayer);
-					entities.add(new TileEntity(this, "blacktile.png", currentX, currentY, true));
+					entities.add(new TileEntity(this, "blacktile.png", currentX, currentY, true, false));
 				} else if(c == 'w') {
 					blackPlayer = new PlayerEntity(this, "whitetilePlayer.png", currentX, currentY, true);
 					entities.add(blackPlayer);
-					entities.add(new TileEntity(this, "whitetile.png", currentX, currentY, false));
+					entities.add(new TileEntity(this, "whitetile.png", currentX, currentY, false, false));
+				} else if(c == 'W') {
+					whiteGoal = new TileEntity(this, "WhiteExit.png", currentX, currentY, false, true);
+					entities.add(whiteGoal);
+				} else if(c == 'B') {
+					blackGoal = new TileEntity(this, "BlackExit.png", currentX, currentY, true, true);
+					entities.add(blackGoal);
 				}
 				currentX += 50;
 			}
@@ -204,6 +212,9 @@ public class Game extends Canvas {
 				downPressed0 = !downPressed0;
 			}
 			
+			if(((PlayerEntity) blackPlayer).didIFinish() && ((PlayerEntity) whitePlayer).didIFinish()) {
+				System.out.println("YOU WON");
+			}
 			//since we have finished drawing we clear up the current graphics and then flip the buffer
 			//i.e. we change the current "frame" to be the next one
 			g.dispose();

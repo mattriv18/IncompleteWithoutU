@@ -70,4 +70,7 @@ public class Entity {
 	public boolean canIMove() {
 		return false;
 	}
+	public boolean getGoal() {
+		return false;
+	}
 }

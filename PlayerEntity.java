@@ -32,7 +32,6 @@ public class PlayerEntity extends Entity {
 			for(int i = 0; i < ents.size(); i++) {
 				if(ents.get(i) instanceof TileEntity) {
 					if(ents.get(i).tileX == this.tileX && ents.get(i).tileY == this.tileY && ents.get(i).tileColor == tileColor) {
-						System.out.println("hi");
 						return true;
 					} else if(ents.get(i).tileX == this.tileX && ents.get(i).tileY == this.tileY && ents.get(i).tileColor != tileColor){
 						return false;
@@ -43,6 +42,23 @@ public class PlayerEntity extends Entity {
 		}
 		return true;
 	}
+	
+	public boolean didIFinish() {
+		ArrayList<Entity> ents = game.getEntities();
+		for(int i = 0; i < ents.size(); i++) {
+			if(ents.get(i) instanceof TileEntity) {
+				if(ents.get(i).tileX == this.tileX && ents.get(i).tileY == this.tileY && ents.get(i).tileColor != tileColor) {
+					if(ents.get(i).getGoal()){
+						System.out.println("one color is WON");
+						return true;
+					}
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+	
 	//checks to see if the player has the opposite color tile next to it
 	//if it does, then it returns true meaning that it won't be able to move there
 	public boolean getRight() {
