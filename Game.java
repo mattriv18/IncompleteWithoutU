@@ -26,11 +26,11 @@ public class Game extends Canvas {
 		//Gets the content area from the container and creates a panel for it
 		//then sets the original resolution of the game
 		JPanel panel = (JPanel) container.getContentPane();
-		panel.setPreferredSize(new Dimension(800, 600));
+		panel.setPreferredSize(new Dimension(750, 750));
 		panel.setLayout(null);
 		
 		//setup our canvas size and puts it into the content of the frame
-		setBounds(0,0,800,600);
+		setBounds(0,0,750,750);
 		panel.add(this);
 		
 		//Tell AWT to not repaint our canvas since we will do that ourselves
@@ -60,7 +60,7 @@ public class Game extends Canvas {
 			//gets a hold of the graphics context for the accelerated surface and makes it all black
 			Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
 			g.setColor(Color.black);
-			g.fillRect(0,0,800,600);
+			g.fillRect(0,0,750,750);
 			
 			//since we have finished drawing we clear up the current graphics and then flip the buffer
 			//i.e. we change the current "frame" to be the next one
