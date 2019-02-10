@@ -9,7 +9,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -20,13 +24,68 @@ public class Game extends Canvas {
 	private boolean gameRunning = true;
 	private ArrayList<Entity> entities = new ArrayList<>();
 	private Map map;
-	private Entity player;
+	private Entity whitePlayer;
+	private Entity blackPlayer;
+	private boolean leftPressed1;
+	private boolean rightPressed1;
+	private boolean upPressed1;
+	private boolean downPressed1;
+	private boolean leftPressed0;
+	private boolean rightPressed0;
+	private boolean upPressed0;
+	private boolean downPressed0;
+	private int moveSpeed = 50;
 	
-	private void initEntities() {
-		player = new Entity("player2.png", map, 0,0);
-		entities.add(player);
+	public Entity getOtherPlayer(Entity player) {
+		if(player.tileColor == true) {
+			return whitePlayer;
+		}
+		return blackPlayer;
 	}
 	
+	private void initEntities() {
+		ArrayList<String> lines = new ArrayList<>();
+		try(Scanner sc = new Scanner(new File("resources/lvl1.txt"))){
+			while(sc.hasNextLine()) {
+				lines.add(sc.nextLine());
+			}
+		}
+		catch(FileNotFoundException e){
+			System.out.println("File '" + "lvl1.txt" + "' not found, initializing both 'list' and 'array' to be empty\n");
+		}
+		catch(Exception e){
+			System.out.println("Error occurred while extracting data:\n");
+
+		}
+		int currentX = 0;
+		int currentY = 0;
+		for(String s : lines) {
+			char[] chars = s.toCharArray();
+			for(char c : chars) {
+				if(c == '0') {
+					entities.add(new TileEntity(this, "whitetile.png", currentX, currentY, false));
+				} else if(c == '1') {
+					entities.add(new TileEntity(this, "blacktile.png", currentX, currentY, true));
+				} else if(c == 'b') {
+					whitePlayer = new PlayerEntity(this, "blacktileplayer.png", currentX, currentY, false);
+					entities.add(whitePlayer);
+					entities.add(new TileEntity(this, "blacktile.png", currentX, currentY, true));
+				} else if(c == 'w') {
+					blackPlayer = new PlayerEntity(this, "whitetilePlayer.png", currentX, currentY, true);
+					entities.add(blackPlayer);
+					entities.add(new TileEntity(this, "whitetile.png", currentX, currentY, false));
+				}
+				currentX += 50;
+			}
+			currentX = 0;
+			currentY += 50;
+			
+		}
+	}
+	
+	public ArrayList<Entity> getEntities(){
+		return entities;
+	}
 	public Game() {
 		//Create the frame for our game
 		JFrame container = new JFrame("ctrl game");
@@ -49,6 +108,8 @@ public class Game extends Canvas {
 		container.setResizable(false);
 		container.setVisible(true);
 		
+		addKeyListener(new KeyInputHandler());
+		
 		//create a buffer strategy that allows AWT to do something to make our game
 		//run better
 		createBufferStrategy(2);
@@ -59,32 +120,88 @@ public class Game extends Canvas {
 	}
 	
 	public void gameLoop() {
-		//this starts to be the time that the first loop starts then changes to be the
-		//beginning of each loop
-		long lastLoopTime = System.currentTimeMillis();
-		
 		while(gameRunning) {
-			//delta is the change in time since the beginning of the last loop
-			long delta = System.currentTimeMillis() - lastLoopTime;
-			lastLoopTime = System.currentTimeMillis();
-			
 			//gets a hold of the graphics context for the accelerated surface and makes it all black
 			Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
 			g.setColor(Color.black);
 			g.fillRect(0,0,750,750);
 			
-			// cycle round asking each entity to move itself
 			for (int i=0;i<entities.size();i++) {
 				Entity entity = (Entity) entities.get(i);
-
 				entity.move();
 			}
-
 			// cycle round drawing all the entities we have in the game
+			int blackPlayerIndex = 0;
+			int whitePlayerIndex = 0;
 			for (int i=0;i<entities.size();i++) {
 				Entity entity = (Entity) entities.get(i);
-
-				entity.draw(g);
+				if(entity instanceof TileEntity) {
+					entity.draw(g);
+				} else if(entity instanceof PlayerEntity) {
+					if(entity.tileColor) {
+						blackPlayerIndex = i;
+					} else {
+						whitePlayerIndex = i;
+					}
+				}
+			}
+			entities.get(blackPlayerIndex).draw(g);
+			entities.get(whitePlayerIndex).draw(g);
+			
+			whitePlayer.setHorizontalMovement(0);
+			whitePlayer.setVerticalMovement(0);
+			// cycle round asking each entity to move itself
+			if(leftPressed1 && !rightPressed1) {
+				if(whitePlayer.canIMove() && !whitePlayer.getLeft()) {
+					whitePlayer.setHorizontalMovement(-moveSpeed);
+				}
+				leftPressed1 = !leftPressed1;
+			}
+			if(rightPressed1 && !leftPressed1) {
+				if(whitePlayer.canIMove() && !whitePlayer.getRight()) {
+					whitePlayer.setHorizontalMovement(moveSpeed);
+				}
+				rightPressed1 = !rightPressed1;
+			}
+			if(upPressed1 && !downPressed1) {
+				if(whitePlayer.canIMove() && !whitePlayer.getUp()) {
+					whitePlayer.setVerticalMovement(-moveSpeed);
+				}
+				upPressed1 = !upPressed1;
+			}
+			if(downPressed1 && !upPressed1) {
+				if(whitePlayer.canIMove() && !whitePlayer.getDown()) {
+					whitePlayer.setVerticalMovement(moveSpeed);
+				}
+				downPressed1 = !downPressed1;
+			}
+			
+			blackPlayer.setHorizontalMovement(0);
+			blackPlayer.setVerticalMovement(0);
+			// cycle round asking each entity to move itself
+			if(leftPressed0 && !rightPressed0) {
+				if(blackPlayer.canIMove() && !blackPlayer.getLeft()) {
+					blackPlayer.setHorizontalMovement(-moveSpeed);
+				}
+				leftPressed0 = !leftPressed0;
+			}
+			if(rightPressed0 && !leftPressed0) {
+				if(blackPlayer.canIMove() && !blackPlayer.getRight()) {
+					blackPlayer.setHorizontalMovement(moveSpeed);
+				}
+				rightPressed0 = !rightPressed0;
+			}
+			if(upPressed0 && !downPressed0) {
+				if(blackPlayer.canIMove() && !blackPlayer.getUp()) {
+					blackPlayer.setVerticalMovement(-moveSpeed);
+				}
+				upPressed0 = !upPressed0;
+			}
+			if(downPressed0 && !upPressed0) {
+				if(blackPlayer.canIMove() && !blackPlayer.getDown()) {
+					blackPlayer.setVerticalMovement(moveSpeed);
+				}
+				downPressed0 = !downPressed0;
 			}
 			
 			//since we have finished drawing we clear up the current graphics and then flip the buffer
@@ -94,6 +211,42 @@ public class Game extends Canvas {
 			
 			//then pause for a bit: this will allow us to have the game run at 100 fps
 			try { Thread.sleep(10); } catch (Exception e) {}
+		}
+	}
+	
+	private class KeyInputHandler extends KeyAdapter{			
+		public void keyReleased(KeyEvent e) {			
+			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				leftPressed1 = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				rightPressed1 = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
+				upPressed1 = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				downPressed1 = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_A) {
+				leftPressed0 = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_D) {
+				rightPressed0 = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_W) {
+				upPressed0 = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_S) {
+				downPressed0 = true;
+			}
+		}
+
+		public void keyTyped(KeyEvent e) {
+			// if we hit escape, then quit the game
+			if (e.getKeyChar() == 27) {
+				System.exit(0);
+			}
 		}
 	}
 	

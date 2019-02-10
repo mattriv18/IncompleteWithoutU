@@ -5,30 +5,23 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 
 public class Entity {
-	private float x;
-	private float y;
+	protected float tileX;
+	protected float tileY;
 	private Sprite sprite;
-	private Map map;
-	private float size = 0.3f;
-	private float dx = 1;
-	private float dy = 1;
+	protected float dx = 0;
+	protected float dy = 0;
+	protected boolean tileColor; // true: black ----- false: white
 	
-	public Entity(String ref, Map map, float x, float y) {
+	public Entity(String ref, float tileX, float tileY, boolean tileColor) {
 		this.sprite = SpriteStore.get().getSprite(ref);
-		this.map = map;
-		this.x = x;
-		this.y = y;
+		this.tileX = tileX;
+		this.tileY = tileY;
+		this.tileColor = tileColor;
 	}
-	public boolean move() {
-		float newx = x+dx;
-		float newy = y+dy;
-		if(validLocation(newx, newy)) {
-			x = newx;
-			y = newy;
-			return true;
-		}
-		return false;
-		
+	public void move() {
+		// update the location of the entity based on move speeds
+		tileX += dx;
+		tileY += dy;
 	}
 	
 	public void setHorizontalMovement(float dx) {
@@ -48,33 +41,33 @@ public class Entity {
 	}
 	
 	public void draw(Graphics g) {
-		sprite.draw(g,(int) x,(int) y);
+		sprite.draw(g,(int) tileX,(int) tileY);
 	}
 	
 	public void doLogic() {
 	}
 	
 	public int getX() {
-		return (int) x;
+		return (int) tileX;
 	}
 
 	public int getY() {
-		return (int) y;
+		return (int) tileY;
 	}
 	
-	public boolean validLocation(float newx, float newy) {
-		if(map.white(newx - size, newy - size)) {
-			return false;
-		}
-		if(map.white(newx + size, newy - size)) {
-			return false;
-		}
-		if(map.white(newx - size, newy + size)) {
-			return false;
-		}
-		if(map.white(newx + size, newy + size)) {
-			return false;
-		}
-		return true;
+	public boolean getRight() {
+		return false;
+	}
+	public boolean getLeft() {
+		return false;
+	}
+	public boolean getDown() {
+		return false;
+	}
+	public boolean getUp() {
+		return false;
+	}
+	public boolean canIMove() {
+		return false;
 	}
 }
