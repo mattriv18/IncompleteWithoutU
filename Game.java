@@ -6,8 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +21,6 @@ public class Game extends Canvas {
 	//is set to true if the game is currently running (looping)
 	private boolean gameRunning = true;
 	private ArrayList<Entity> entities = new ArrayList<>();
-	private Map map;
 	private Entity whitePlayer;
 	private Entity blackPlayer;
 	private Entity blackGoal;
@@ -122,7 +119,6 @@ public class Game extends Canvas {
 		//run better
 		createBufferStrategy(2);
 		strategy = getBufferStrategy();
-		map = new Map();
 		//player = new Entity(sprite, map, 0, 0);
 		initEntities();
 	}
